@@ -54,6 +54,7 @@ const RecordingMerge = ({
         <RecordingList
           mergeForm={form}
           recordings={sortByEntityName(toMerge)}
+          showAcousticBrainz
           showAcoustIds
           showExpandedArtistCredits
         />

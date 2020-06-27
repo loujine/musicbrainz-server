@@ -593,6 +593,70 @@ export const useAcoustIdsColumn = (
   };
 };
 
+const AcousticBrainzCell = ({
+  isLoading,
+  count,
+}: {
+  +isLoading: boolean,
+  +count: number,
+}): React.Element<typeof React.Fragment> => (
+  <>
+    {isLoading ? (
+      <p className="loading-message">
+        {l('Loading...')}
+      </p>
+    ) : (
+      count ? (
+        <a className="external" href={`//acousticbrainz.org/${value}`}>
+          {texp.ln(
+            '{count} submission',
+            '{count} submissions',
+            count,
+            {count},
+          )}
+        </a>
+      ) : null
+    )}
+  </>
+);
+
+export const useAcousticBrainzColumn = (
+  recordings: $ReadOnlyArray<RecordingT>,
+  showAcousticBrainz: boolean,
+): ColumnOptions<{+gid?: string, ...}, string> | null => {
+  const [data, setData] = React.useState<{
+    +[recordingMbid: string]: $ReadOnlyArray<AcoustIdTrackT>,
+  } | null>(null);
+  const [isLoading, setLoading] = React.useState(showAcousticBrainz);
+  const [count, setCount] = React.useState(0);
+  React.useEffect(() => {
+    if (showAcousticBrainz) {
+      fetch(`//acousticbrainz.org/api/v1/${recordings}/count`)
+        .then(
+          resp => resp.json(),
+        )
+        .then(data => {
+          setCount(data.count);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    }
+  }, [recordings, showAcousticBrainz]);
+
+  return (
+    Cell: ({cell: {value}}) => {
+      <AcousticBrainzCell
+        isLoading={isLoading}
+        count={count}
+      />
+    ),
+    Header: N_l('AcousticBrainz'),
+    accessor: 'gid',
+    id: 'acousticbrainz',
+  };
+};
+
 export const iswcsColumn:
   ColumnOptions<{
     +iswcs: $ReadOnlyArray<IswcT>,
