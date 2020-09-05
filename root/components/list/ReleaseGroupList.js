@@ -8,6 +8,7 @@
  */
 
 import * as React from 'react';
+import Slider from 'react-slick';
 
 import {CatalystContext} from '../../context';
 import Table from '../Table';
@@ -44,6 +45,50 @@ type ReleaseGroupListProps = {
   +releaseGroups: $ReadOnlyArray<ReleaseGroupT>,
   +showRatings?: boolean,
   +sortable?: boolean,
+};
+
+const ReleaseGroupListCarousel = ({
+  releaseGroups,
+}) => {
+  const settings = {
+    arrows: true,
+    centerMode: false,
+    dots: false,
+    infinite: true,
+    lazyLoad: false,
+    slidesToScroll: 3,
+    slidesToShow: 4,
+    speed: 500,
+  };
+
+  function getFirstReleaseYear(entity: ReleaseGroupT) {
+    if (!nonEmpty(entity.firstReleaseDate)) {
+      return '—';
+    }
+
+    return parseDate(entity.firstReleaseDate).year?.toString() ?? '—';
+  }
+  function slickSlide(entity) {
+    const coverUrl = `https://coverartarchive.org/release-group/${entity.gid}/front-250.jpg`;
+    const rgUrl = `https://musicbrainz.org/release-group/${entity.gid}`;
+    return (
+      <div>
+        <a href={rgUrl}>
+          <img src={coverUrl} />
+        </a>
+        <p>{getFirstReleaseYear(entity)}</p>
+      </div>
+    );
+  }
+  return (
+    <div className="slick-container">
+      <Slider {...settings}>
+        {releaseGroups.map(
+          group => slickSlide(group),
+        )}
+      </Slider>
+    </div>
+  );
 };
 
 export const ReleaseGroupListTable = ({
@@ -164,6 +209,11 @@ const ReleaseGroupList = ({
               : releaseGroupType(releaseGroupsOfType[0])
             }
           </h3>
+          {releaseGroupsOfType.length > 1 ?
+            <ReleaseGroupListCarousel
+              releaseGroups={releaseGroupsOfType}
+            /> : null
+          }
           <ReleaseGroupListTable
             checkboxes={checkboxes}
             mergeForm={mergeForm}
