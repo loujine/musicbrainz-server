@@ -29,12 +29,14 @@ type Props = {
   +work: WorkT,
 };
 
+// <SubrecordingsTable entity={work} heading={l('Subrecordings')} />
 const WorkIndex = ({
   $c,
   eligibleForCleanup,
   numberOfRevisions,
   pagedLinkTypeGroup,
   pager,
+  subrec,
   wikipediaExtract,
   work,
 }: Props): React.Element<typeof WorkLayout> => (
@@ -60,6 +62,9 @@ const WorkIndex = ({
       pagedLinkTypeGroup={pagedLinkTypeGroup}
       pager={pager}
     />
+    <p>
+      {JSON.stringify(subrec)}
+    </p>
     {manifest.js('work/index.js', {async: 'async'})}
   </WorkLayout>
 );

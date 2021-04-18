@@ -83,6 +83,12 @@ sub show : PathPart('') Chained('load')
     my $stash = $c->stash;
     $c->model('Work')->load_writers($stash->{work});
 
+    my $work = $stash->{work};
+    my $subrec = $c->model('Recording')->find_subrecordings_by_work($work->id);
+    $c->stash(
+        subrec => $subrec,
+    );
+
     my $pager = defined $stash->{pager}
         ? serialize_pager($stash->{pager})
         : undef;
@@ -91,6 +97,7 @@ sub show : PathPart('') Chained('load')
         numberOfRevisions => $stash->{number_of_revisions},
         pagedLinkTypeGroup => to_json_object($stash->{paged_link_type_group}),
         pager => $pager,
+        subrec => $stash->{subrec},
         wikipediaExtract => to_json_object($stash->{wikipedia_extract}),
         work => $stash->{work}->TO_JSON,
     );
